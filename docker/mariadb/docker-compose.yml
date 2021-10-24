@@ -1,0 +1,15 @@
+# Use root/example as user/password credentials
+version: '3.7'
+
+services:
+  db:
+    image: mariadb
+    container_name: catch_a_nest_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - ./db:/var/lib/mysql
+      - ./db/conf.d:/etc/mysql/conf.d
+    ports:
+      - 3306:3306

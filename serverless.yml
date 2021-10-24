@@ -1,0 +1,44 @@
+service: seo-nest
+
+plugins:
+  - serverless-dotenv-plugin
+  - serverless-webpack
+  - serverless-offline
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  region: ap-northeast-2
+  stage: dev
+  lambdaHashingVersion: 20201221
+
+  environment:
+    JWT_SECRET: ${env:JWT_SECRET}
+    CLOUDFRONT_URL: ${env:CLOUDFRONT_URL}
+    AWS_BUCKET_NAME: ${env:AWS_BUCKET_NAME}
+    TYPEORM_TYPE: ${env:TYPEORM_TYPE}
+    TYPEORM_HOST: ${env:TYPEORM_HOST}
+    TYPEORM_PORT: ${env:TYPEORM_PORT}
+    TYPEORM_USERNAME: ${env:TYPEORM_USERNAME}
+    TYPEORM_PASSWORD: ${env:TYPEORM_PASSWORD}
+    TYPEORM_DATABASE: ${env:TYPEORM_DATABASE}
+    TYPEORM_SYNCHRONIZE: ${env:TYPEORM_SYNCHRONIZE}
+    TYPEORM_LOGGING: ${env:TYPEORM_LOGGING}
+
+functions:
+  app:
+    handler: src/serverless.handler
+    events:
+      - http:
+          path: /
+          method: ANY
+      - http:
+          path: /{any+}
+          method: ANY
+
+custom:
+  webpack:
+    includeModules: true
+    packager: 'yarn'
+  dotenv:
+    logging: true
