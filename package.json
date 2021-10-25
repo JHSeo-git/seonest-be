@@ -53,6 +53,9 @@
     "serverless-webpack": "^5.4.1",
     "source-map-support": "^0.5.19",
     "ts-loader": "^8.1.0",
+    "ts-node": "^9.1.1",
+    "ts-node-dev": "^1.1.6",
+    "tsconfig-paths": "^3.9.0",
     "typeorm": "^0.2.31",
     "webpack": "^5.33.2",
     "webpack-node-externals": "^2.5.2"
@@ -73,9 +76,6 @@
     "@typescript-eslint/parser": "^4.17.0",
     "eslint": "^7.22.0",
     "serverless-dotenv-plugin": "^3.9.0",
-    "ts-node": "^9.1.1",
-    "ts-node-dev": "^1.1.6",
-    "tsconfig-paths": "^3.9.0",
     "typescript": "4.4.4"
   }
 }
