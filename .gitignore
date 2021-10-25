@@ -19,3 +19,4 @@ build
 *.key
 
 .DS_Store
+.backup-db
