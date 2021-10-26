@@ -32,6 +32,17 @@
     "pm2:deploy": "cat ./ecosystem.config.js && pm2 deploy ecosystem.config.js production --force"
   },
   "dependencies": {
+    "@types/aws-lambda": "^8.10.75",
+    "@types/jsonwebtoken": "^8.5.0",
+    "@types/koa": "^2.13.1",
+    "@types/koa-bodyparser": "^4.3.0",
+    "@types/koa-compress": "^4.0.1",
+    "@types/koa-logger": "^3.1.1",
+    "@types/koa__cors": "^3.0.2",
+    "@types/koa__router": "^8.0.4",
+    "@types/mime-types": "^2.1.0",
+    "@types/mysql": "^2.15.18",
+    "@types/node": "^14.14.34",
     "@koa/cors": "^3.1.0",
     "@koa/router": "^10.0.0",
     "aws-sdk": "^2.884.0",
@@ -57,25 +68,14 @@
     "ts-node-dev": "^1.1.6",
     "tsconfig-paths": "^3.9.0",
     "typeorm": "^0.2.31",
+    "typescript": "4.4.4",
     "webpack": "^5.33.2",
     "webpack-node-externals": "^2.5.2"
   },
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.75",
-    "@types/jsonwebtoken": "^8.5.0",
-    "@types/koa": "^2.13.1",
-    "@types/koa-bodyparser": "^4.3.0",
-    "@types/koa-compress": "^4.0.1",
-    "@types/koa-logger": "^3.1.1",
-    "@types/koa__cors": "^3.0.2",
-    "@types/koa__router": "^8.0.4",
-    "@types/mime-types": "^2.1.0",
-    "@types/mysql": "^2.15.18",
-    "@types/node": "^14.14.34",
     "@typescript-eslint/eslint-plugin": "^4.17.0",
     "@typescript-eslint/parser": "^4.17.0",
     "eslint": "^7.22.0",
-    "serverless-dotenv-plugin": "^3.9.0",
-    "typescript": "4.4.4"
+    "serverless-dotenv-plugin": "^3.9.0"
   }
 }
