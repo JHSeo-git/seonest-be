@@ -92,4 +92,15 @@ esac
 
 PM2를 로컬에서 배포할 수 있도록 설정이 완료되었다면 그 행위를 Github Action으로 옮겨주기만 하면 된다. 조심해야 할 것은 디펜던시가 없는 상태에서 실행해야 한다는 점을 생각하여 디펜던시 설치까지 생각하도록 하자. 또한, ssh key를 가지고 deploy를 할 수 있기 때문에 경로와 생성파일을 정확히 지정해주어야 한다.
 
+### trouble shooting
+
+#### 1. secrets
+
+secrets를 사전에 등록했는지 확인한다.
+
+##### 2. ssh connection timeout
+
+- ecosystem.config.js와 github action에서 key 설정(경로, 이름 등)을 확인한다.
+- ec2 보안그룹에서 ssh관련 설정을 확인한다. (등록이 되어 있지 않거나, 제한된 ip라면 연결되지 않는다.)
+
 > @see https://dev.to/goodidea/setting-up-pm2-ci-deployments-with-github-actions-1494
