@@ -28,7 +28,7 @@ export const getMe = async (ctx: Context) => {
     }
 
     ctx.body = userData;
-  } catch (e) {
+  } catch (e: any) {
     ctx.throw(500, e);
   }
 };

@@ -7,16 +7,18 @@ import {
   generateUrlSlug,
   validateBodySchema,
 } from '@src/lib/common';
-import Joi, { equal } from 'joi';
+import Joi from 'joi';
 import { Context } from 'koa';
 import { getManager, getRepository, LessThan } from 'typeorm';
 import crypto from 'crypto';
+import { Category } from '@src/entity/Category';
 
 type SaveNewPostBodySchema = {
   title: string;
   body: string;
   shortDescription?: string;
   thumbnail?: string;
+  categories?: string[];
 };
 
 export const saveNewPost = async (ctx: Context) => {
@@ -25,14 +27,20 @@ export const saveNewPost = async (ctx: Context) => {
     body: Joi.string().required(),
     shortDescription: Joi.string().allow(''),
     thumbnail: Joi.string().allow(''),
+    categories: Joi.array().items(Joi.string()),
   });
 
   if (!(await validateBodySchema(ctx, bodySchema))) {
     return;
   }
 
-  const { title, body, shortDescription, thumbnail }: SaveNewPostBodySchema =
-    ctx.request.body;
+  const {
+    title,
+    body,
+    shortDescription,
+    thumbnail,
+    categories,
+  }: SaveNewPostBodySchema = ctx.request.body;
   try {
     const currentUser = await getRepository(User).findOne({
       id: ctx.user?.id,
@@ -56,6 +64,26 @@ export const saveNewPost = async (ctx: Context) => {
       urlSlug = generateUrlSlug(`${title} ${Date.now()}`);
     }
 
+    // categories
+    const categoryRepo = getRepository(Category);
+    const newCategories = await Promise.all(
+      (categories ?? []).map(async (category) => {
+        const slug = generateUrlSlug(category);
+        const exists = await categoryRepo.findOne({
+          url_slug: slug,
+        });
+
+        if (!exists) {
+          const newCategory = new Category();
+          newCategory.name = category;
+          newCategory.url_slug = slug;
+          return await categoryRepo.save(newCategory);
+        }
+
+        return exists;
+      })
+    );
+
     const newPost = new Post();
     newPost.title = title;
     newPost.body = body;
@@ -65,11 +93,12 @@ export const saveNewPost = async (ctx: Context) => {
     newPost.user = currentUser;
     newPost.is_temp = false;
     newPost.read_time = getReadTime(body);
+    newPost.categories = newCategories;
 
     const savedPost = await getRepository(Post).save(newPost);
 
     ctx.body = savedPost;
-  } catch (e) {
+  } catch (e: any) {
     ctx.throw(500, e);
   }
 };
@@ -80,14 +109,20 @@ export const updatePost = async (ctx: Context) => {
     body: Joi.string().required(),
     shortDescription: Joi.string().allow(''),
     thumbnail: Joi.string().allow(''),
+    categories: Joi.array().items(Joi.string()),
   });
 
   if (!(await validateBodySchema(ctx, bodySchema))) {
     return;
   }
 
-  const { title, body, shortDescription, thumbnail }: SaveNewPostBodySchema =
-    ctx.request.body;
+  const {
+    title,
+    body,
+    shortDescription,
+    thumbnail,
+    categories,
+  }: SaveNewPostBodySchema = ctx.request.body;
   try {
     const params = ctx.params;
     const { slug } = params;
@@ -105,12 +140,33 @@ export const updatePost = async (ctx: Context) => {
       return;
     }
 
+    // categories
+    const categoryRepo = getRepository(Category);
+    const newCategories = await Promise.all(
+      (categories ?? []).map(async (category) => {
+        const slug = generateUrlSlug(category);
+        const exists = await categoryRepo.findOne({
+          url_slug: slug,
+        });
+
+        if (!exists) {
+          const newCategory = new Category();
+          newCategory.name = category;
+          newCategory.url_slug = slug;
+          return await categoryRepo.save(newCategory);
+        }
+
+        return exists;
+      })
+    );
+
     post.title = title;
     post.body = body;
     post.short_description = shortDescription;
     post.thumbnail = thumbnail;
     post.is_temp = false;
     post.read_time = getReadTime(body);
+    post.categories = newCategories;
 
     const manager = getManager();
     const savedPost = await manager.save(post);
@@ -126,7 +182,7 @@ export const updatePost = async (ctx: Context) => {
     }
 
     ctx.body = savedPost;
-  } catch (e) {
+  } catch (e: any) {
     ctx.throw(500, e);
   }
 };
@@ -142,7 +198,7 @@ export const getAllPostSlug = async (ctx: Context) => {
     });
 
     ctx.body = posts.map((post) => post.url_slug);
-  } catch (e) {
+  } catch (e: any) {
     ctx.throw(500, e);
   }
 };
@@ -158,7 +214,7 @@ export const getAllPostId = async (ctx: Context) => {
     });
 
     ctx.body = posts.map((post) => post.id);
-  } catch (e) {
+  } catch (e: any) {
     ctx.throw(500, e);
   }
 };
@@ -175,7 +231,7 @@ export const getPosts = async (ctx: Context) => {
         ...(cursor ? { id: LessThan(cursor) } : {}),
         is_temp: false,
       },
-      relations: ['user'],
+      relations: ['user', 'categories'],
       take: takeLatest ? takeLatest : 10,
       order: {
         id: 'DESC',
@@ -201,7 +257,7 @@ export const getPosts = async (ctx: Context) => {
     // TODO: serialized ... omit body
 
     ctx.body = postsWithCount;
-  } catch (e) {
+  } catch (e: any) {
     ctx.throw(500, e);
   }
 };
@@ -229,7 +285,8 @@ export const getPostBySlug = async (ctx: Context) => {
     const postRepo = getRepository(Post);
 
     const post = await postRepo.findOne({
-      url_slug: slug,
+      where: { url_slug: slug },
+      relations: ['user', 'categories'],
     });
 
     if (!post) {
@@ -281,7 +338,7 @@ export const getPostBySlug = async (ctx: Context) => {
       next_post: nextPostUrl,
       prev_post: prevPostUrl,
     };
-  } catch (e) {
+  } catch (e: any) {
     ctx.throw(500, e);
   }
 };
@@ -326,7 +383,7 @@ export const deletePostBySlug = async (ctx: Context) => {
     }
 
     ctx.status = 204;
-  } catch (e) {
+  } catch (e: any) {
     ctx.throw(500, e);
   }
 };

@@ -29,7 +29,7 @@ export const getTempPosts = async (ctx: Context) => {
     });
 
     ctx.body = posts;
-  } catch (e) {
+  } catch (e: any) {
     ctx.throw(500, e);
   }
 };
@@ -53,12 +53,8 @@ export const saveTempPost = async (ctx: Context) => {
     return;
   }
 
-  const {
-    title,
-    body,
-    shortDescription,
-    thumbnail,
-  }: saveTempPostSchema = ctx.request.body;
+  const { title, body, shortDescription, thumbnail }: saveTempPostSchema =
+    ctx.request.body;
   try {
     const currentUser = await getRepository(User).findOne({
       id: ctx.user?.id,
@@ -119,7 +115,7 @@ export const saveTempPost = async (ctx: Context) => {
     await manager.save(newTempPost);
 
     ctx.body = savedPost;
-  } catch (e) {
+  } catch (e: any) {
     ctx.throw(500, e);
   }
 };
@@ -136,12 +132,8 @@ export const saveNewTempPost = async (ctx: Context) => {
     return;
   }
 
-  const {
-    title,
-    body,
-    shortDescription,
-    thumbnail,
-  }: saveTempPostSchema = ctx.request.body;
+  const { title, body, shortDescription, thumbnail }: saveTempPostSchema =
+    ctx.request.body;
   try {
     const currentUser = await getRepository(User).findOne({
       id: ctx.user?.id,
@@ -187,7 +179,7 @@ export const saveNewTempPost = async (ctx: Context) => {
     await manager.save(newTempPost);
 
     ctx.body = savedPost;
-  } catch (e) {
+  } catch (e: any) {
     ctx.throw(500, e);
   }
 };
@@ -241,7 +233,7 @@ export const getLastTempPost = async (ctx: Context) => {
       : lastTempPost;
 
     ctx.body = serialized;
-  } catch (e) {
+  } catch (e: any) {
     ctx.throw(500, e);
   }
 };

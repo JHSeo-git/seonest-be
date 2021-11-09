@@ -100,7 +100,7 @@ export const uploadImage = async (ctx: Context) => {
       image_path: `https://${AWS_BUCKET_NAME}/${image.path}`,
       signed_url: signedUrl,
     };
-  } catch (e) {
+  } catch (e: any) {
     if (e.name === 'ContentTypeError') {
       ctx.status = 401;
       return;

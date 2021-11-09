@@ -99,7 +99,7 @@ export const loginWithGoogle = async (ctx: Context) => {
         },
       };
     }
-  } catch (e) {
+  } catch (e: any) {
     ctx.throw(500, e);
   }
 };

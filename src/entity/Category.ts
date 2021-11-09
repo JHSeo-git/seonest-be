@@ -34,6 +34,6 @@ export class Category {
   @JoinColumn({ name: 'user_id' })
   user!: User;
 
-  @ManyToMany(() => Post)
+  @ManyToMany(() => Post, { cascade: true, onDelete: 'CASCADE' })
   posts!: Post[];
 }
