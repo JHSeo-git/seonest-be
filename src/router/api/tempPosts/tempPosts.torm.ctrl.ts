@@ -1,3 +1,4 @@
+import { Category } from '@src/entity/Category';
 import { Post } from '@src/entity/Post';
 import { TempPost } from '@src/entity/TempPost';
 import { User } from '@src/entity/User';
@@ -39,6 +40,7 @@ type saveTempPostSchema = {
   body: string;
   shortDescription?: string;
   thumbnail?: string;
+  categories?: string[];
 };
 
 export const saveTempPost = async (ctx: Context) => {
@@ -47,14 +49,20 @@ export const saveTempPost = async (ctx: Context) => {
     body: Joi.string().required(),
     shortDescription: Joi.string().allow(''),
     thumbnail: Joi.string().allow(''),
+    categories: Joi.array().items(Joi.string()),
   });
 
   if (!(await validateBodySchema(ctx, bodySchema))) {
     return;
   }
 
-  const { title, body, shortDescription, thumbnail }: saveTempPostSchema =
-    ctx.request.body;
+  const {
+    title,
+    body,
+    shortDescription,
+    thumbnail,
+    categories,
+  }: saveTempPostSchema = ctx.request.body;
   try {
     const currentUser = await getRepository(User).findOne({
       id: ctx.user?.id,
@@ -77,6 +85,26 @@ export const saveTempPost = async (ctx: Context) => {
       url_slug: urlSlug,
     });
 
+    // categories
+    const categoryRepo = getRepository(Category);
+    const newCategories = await Promise.all(
+      (categories ?? []).map(async (category) => {
+        const slug = generateUrlSlug(category);
+        const exists = await categoryRepo.findOne({
+          url_slug: slug,
+        });
+
+        if (!exists) {
+          const newCategory = new Category();
+          newCategory.name = category;
+          newCategory.url_slug = slug;
+          return await categoryRepo.save(newCategory);
+        }
+
+        return exists;
+      })
+    );
+
     const manager = getManager();
 
     let targetPost: Post | null = null;
@@ -92,6 +120,7 @@ export const saveTempPost = async (ctx: Context) => {
         targetPost.url_slug = urlSlug;
         targetPost.user = currentUser;
         targetPost.read_time = getReadTime(body);
+        targetPost.categories = newCategories;
       }
     } else {
       targetPost = new Post();
@@ -103,6 +132,7 @@ export const saveTempPost = async (ctx: Context) => {
       targetPost.user = currentUser;
       targetPost.is_temp = true;
       targetPost.read_time = getReadTime(body);
+      targetPost.categories = newCategories;
     }
 
     const savedPost = await manager.save(targetPost);
@@ -126,14 +156,20 @@ export const saveNewTempPost = async (ctx: Context) => {
     body: Joi.string().required(),
     shortDescription: Joi.string().allow(''),
     thumbnail: Joi.string().allow(''),
+    categories: Joi.array().items(Joi.string()),
   });
 
   if (!(await validateBodySchema(ctx, bodySchema))) {
     return;
   }
 
-  const { title, body, shortDescription, thumbnail }: saveTempPostSchema =
-    ctx.request.body;
+  const {
+    title,
+    body,
+    shortDescription,
+    thumbnail,
+    categories,
+  }: saveTempPostSchema = ctx.request.body;
   try {
     const currentUser = await getRepository(User).findOne({
       id: ctx.user?.id,
@@ -157,6 +193,26 @@ export const saveNewTempPost = async (ctx: Context) => {
       urlSlug = generateUrlSlug(`${title} ${Date.now()}`);
     }
 
+    // categories
+    const categoryRepo = getRepository(Category);
+    const newCategories = await Promise.all(
+      (categories ?? []).map(async (category) => {
+        const slug = generateUrlSlug(category);
+        const exists = await categoryRepo.findOne({
+          url_slug: slug,
+        });
+
+        if (!exists) {
+          const newCategory = new Category();
+          newCategory.name = category;
+          newCategory.url_slug = slug;
+          return await categoryRepo.save(newCategory);
+        }
+
+        return exists;
+      })
+    );
+
     const manager = getManager();
 
     let targetPost = new Post();
@@ -168,6 +224,7 @@ export const saveNewTempPost = async (ctx: Context) => {
     targetPost.user = currentUser;
     targetPost.is_temp = true;
     targetPost.read_time = getReadTime(body);
+    targetPost.categories = newCategories;
 
     const savedPost = await manager.save(targetPost);
 
@@ -229,6 +286,7 @@ export const getLastTempPost = async (ctx: Context) => {
           short_description: lastTempPost.post.short_description,
           thumbnail: lastTempPost.post.thumbnail,
           url_slug: lastTempPost.post.url_slug,
+          categories: lastTempPost.post.categories,
         }
       : lastTempPost;
 
