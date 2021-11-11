@@ -8,6 +8,7 @@ import {
   ManyToOne,
   JoinColumn,
   ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import { Post } from './Post';
 import { User } from './User';
@@ -35,5 +36,16 @@ export class Category {
   user!: User;
 
   @ManyToMany(() => Post, { cascade: true, onDelete: 'CASCADE' })
+  @JoinTable({
+    name: 'posts_categories',
+    joinColumn: {
+      name: 'category_id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'post_id',
+      referencedColumnName: 'id',
+    },
+  })
   posts!: Post[];
 }

@@ -77,6 +77,7 @@ export const saveNewPost = async (ctx: Context) => {
           const newCategory = new Category();
           newCategory.name = category;
           newCategory.url_slug = slug;
+          newCategory.user = currentUser;
           return await categoryRepo.save(newCategory);
         }
 
@@ -127,6 +128,19 @@ export const updatePost = async (ctx: Context) => {
     const params = ctx.params;
     const { slug } = params;
 
+    const currentUser = await getRepository(User).findOne({
+      id: ctx.user?.id,
+    });
+
+    if (!currentUser) {
+      ctx.status = 404;
+      ctx.body = {
+        name: 'UserNotFound',
+        payload: 'Current User is not found',
+      };
+      return;
+    }
+
     const post = await getRepository(Post).findOne({
       url_slug: slug,
     });
@@ -153,6 +167,7 @@ export const updatePost = async (ctx: Context) => {
           const newCategory = new Category();
           newCategory.name = category;
           newCategory.url_slug = slug;
+          newCategory.user = currentUser;
           return await categoryRepo.save(newCategory);
         }
 
@@ -167,6 +182,7 @@ export const updatePost = async (ctx: Context) => {
     post.is_temp = false;
     post.read_time = getReadTime(body);
     post.categories = newCategories;
+    post.user = currentUser;
 
     const manager = getManager();
     const savedPost = await manager.save(post);

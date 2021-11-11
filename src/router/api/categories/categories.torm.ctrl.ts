@@ -18,7 +18,8 @@ export const getCategory = async (ctx: Context) => {
     const { slug } = params;
 
     const category = await getRepository(Category).findOne({
-      url_slug: slug,
+      where: { url_slug: slug },
+      relations: ['posts'],
     });
 
     ctx.body = category;
