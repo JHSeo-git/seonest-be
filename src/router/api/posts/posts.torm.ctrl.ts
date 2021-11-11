@@ -159,10 +159,9 @@ export const updatePost = async (ctx: Context) => {
     const newCategories = await Promise.all(
       (categories ?? []).map(async (category) => {
         const slug = generateUrlSlug(category);
-        // const exists = await categoryRepo.findOne({
-        //   url_slug: slug,
-        // });
-        const exists = false;
+        const exists = await categoryRepo.findOne({
+          url_slug: slug,
+        });
 
         if (!exists) {
           const newCategory = new Category();
