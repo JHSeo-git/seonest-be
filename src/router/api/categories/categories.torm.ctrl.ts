@@ -58,7 +58,7 @@ export const getRawCategories = async (ctx: Context) => {
           .getRawMany();
         return {
           ...post,
-          postReadCount: postCountArr.length,
+          post_read_count: postCountArr.length,
         };
       })
     );
@@ -87,6 +87,7 @@ type RawCategory = {
   post_created_at: string;
   post_updated_at: string;
   post_user_id: number;
+  post_read_count?: number;
   user_id: number;
   user_email: string;
   user_display_name: string;
