@@ -5,5 +5,6 @@ const categories = new Router();
 
 categories.get('/', categoryCtrl.getCategories);
 categories.get('/:slug', categoryCtrl.getCategory);
+categories.get('/raw/:slug', categoryCtrl.getRawCategories);
 
 export default categories;
