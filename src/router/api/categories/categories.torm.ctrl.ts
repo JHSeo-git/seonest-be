@@ -5,9 +5,19 @@ import { getRepository, LessThan } from 'typeorm';
 
 export const getCategories = async (ctx: Context) => {
   try {
-    const categires = await getRepository(Category).find();
+    const categories = await getRepository(Category).find({
+      relations: ['posts'],
+    });
 
-    ctx.body = categires;
+    const serialized = categories.map((category) => {
+      const { posts, ...categoryExceptPosts } = category;
+      return {
+        ...categoryExceptPosts,
+        postsCount: posts?.length ?? 0,
+      };
+    });
+
+    ctx.body = serialized;
   } catch (e: any) {
     ctx.throw(500, e);
   }
