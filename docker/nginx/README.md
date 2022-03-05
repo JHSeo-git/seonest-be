@@ -1,6 +1,6 @@
 ## nginx.conf
 
-```nginx
+```conf
 user nginx; ## NGINX 프로세스가 실행되는 권한, root 권한은 보안상 위험함
 worker_processes 2; ## Default: 1, CPU 코어 하나에 최소한 한 개의 프로세스가 배정되도록 변경 권장
 worker_priority 0; ## 값이 작을 수록 높은 우선순위를 갖는다. 커널 프로세스의 기본 우선순위인 -5 이하로는 설정하지 않도록 한다.

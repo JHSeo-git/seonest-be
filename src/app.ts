@@ -21,12 +21,12 @@ const corsOptions: cors.Options = {
   origin: (ctx) => {
     const { origin } = ctx.header;
     if (!origin) {
-      return ctx.throw('Not valid origin');
+      return ctx.throw(`Not valid origin [${origin}]`);
     }
     const host = origin.split('://')[1];
     const vercelRegex = /jhseo-git.vercel.app/g;
     if (!validHosts.includes(host) && !vercelRegex.test(host))
-      return ctx.throw('Not valid origin');
+      return ctx.throw(`Not valid origin [${origin}]`);
 
     return origin;
   },
