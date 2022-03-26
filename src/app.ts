@@ -15,6 +15,7 @@ const validHosts = [
   'catch-a-nest.vercel.app',
   'seonest.net',
   'www.seonest.net',
+  'cf.seonest.net',
 ];
 const corsOptions: cors.Options = {
   // origin: '*',
