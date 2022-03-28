@@ -2,7 +2,7 @@ import { SocialAccount } from '@src/entity/SocialAccount';
 import { User } from '@src/entity/User';
 import { validateBodySchema } from '@src/lib/common';
 import getGoogleProfile from '@src/lib/google/getGoogleProfile';
-import { setTokenCookie } from '@src/lib/token/jwt';
+import { resetTokenCookie, setTokenCookie } from '@src/lib/token/jwt';
 import Joi from 'joi';
 import { Context } from 'koa';
 import { getManager, getRepository } from 'typeorm';
@@ -102,4 +102,9 @@ export const loginWithGoogle = async (ctx: Context) => {
   } catch (e: any) {
     ctx.throw(500, e);
   }
+};
+
+export const logout = async (ctx: Context) => {
+  resetTokenCookie(ctx);
+  ctx.status = 204;
 };

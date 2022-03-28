@@ -80,3 +80,15 @@ export function setTokenCookie(
     });
   }
 }
+
+export function resetTokenCookie(ctx: Context) {
+  ctx.cookies.set('access_token', '', {
+    httpOnly: true,
+    maxAge: 0,
+  });
+
+  ctx.cookies.set('refresh_token', '', {
+    httpOnly: true,
+    maxAge: 0,
+  });
+}
