@@ -17,7 +17,7 @@ export const getCategories = async (ctx: Context) => {
       };
     });
 
-    ctx.body = serialized;
+    ctx.body = serialized.filter((category) => category.postsCount > 0);
   } catch (e: any) {
     ctx.throw(500, e);
   }
