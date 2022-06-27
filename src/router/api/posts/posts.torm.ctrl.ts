@@ -353,7 +353,9 @@ export const getPostBySlug = async (ctx: Context) => {
     const postReadRepo = getRepository(PostRead);
 
     const ipAddr = ctx.ipAddr;
-    if (ipAddr) {
+    const method = ctx.method;
+    if (ipAddr && method === 'GET') {
+      console.log(ipAddr);
       const postRead = new PostRead();
       postRead.ip_hash = crypto.createHash('md5').update(ipAddr).digest('hex');
       postRead.post = post;
