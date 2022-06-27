@@ -1,7 +1,10 @@
 import { Middleware } from 'koa';
 
 const addIPAddress: Middleware = (ctx, next) => {
-  ctx.ipAddr = ctx.request.ips[0] ?? ctx.request.ip;
+  const ipAddr = ctx.request.ip;
+
+  ctx.ipAddr = ipAddr ?? null;
+
   return next();
 };
 
